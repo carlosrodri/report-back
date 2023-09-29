@@ -1,4 +1,4 @@
-Nombre,Apellido,Correo_electronico,Duracion,Hora_entrad,Hora_salida
+Nombre;Apellido;Correo;Duracion;Hora_entrad;Hora_salida
 Natalia Alejandra;Africano Fino;natalia.africano@uptc.edu.co;1 h 57 min;9:59;11:56
 JOSE ARQUIMEDES;ALBA CUPA;jose.alba@uptc.edu.co;2 h 2 min;10:01;12:06
 Yamid;Alonso;yami********@***.com;2 h 6 min;10:00;12:06
