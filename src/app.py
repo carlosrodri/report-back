@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from config import config
 import pandas as pd
 import json
@@ -6,9 +7,11 @@ import datetime
 
 app = Flask(__name__)
 
+CORS(app, resources={r"/*": {"origins": "*"}})
 df_event = pd.read_csv('../data/Registro_Evento.csv',sep=',',encoding = "UTF-8")
 df_event_students = df_event.drop(df_event[df_event['Programa_Academico'] == 'Docente'].index)
 df_event_students = df_event.drop(df_event[df_event['Asignatura'].isnull() & (df_event.Programa_Academico == 'Docente')].index)
+df_event_students = df_event.drop(df_event[df_event['Asignatura'].isnull()].index)
 df_event_students = df_event.drop(df_event[df_event['Programa_Academico'] == 'Administrativo'].index)
 df_event_students = df_event.drop(df_event[df_event['Programa_Academico'] == 'Gobernación de Boyacá'].index)
 
@@ -83,7 +86,7 @@ def topSubjectMax():
     
     return jsonify({'Subjects': parsed_json})
 
-#Materia con menor asistencia
+#Materia con menor asistencia-----
 @app.route('/top-subject-min')
 def topSubjectMin():
     df_top_subject = df_students.groupby(['Asignatura']).apply(lambda x: x['Session_1'].sum() + x['Session_2'].sum() + x['Session_3'].sum() + x['Session_4'].sum()).reset_index(name='Total').min()
@@ -98,7 +101,8 @@ def topStudentMax():
     parsed_json = json.loads(df_top_subject.to_json(orient='records'))
     
     return jsonify({'Subjects': parsed_json})
-#Top asistencia por estudiante (descendente)
+
+#Top asistencia por estudiante (descendente)-----
 @app.route('/top-student')
 def topStudent():
     df_top_subject = df_students.groupby(['Correo']).apply(lambda x: x['Session_1'].sum() + x['Session_2'].sum() + x['Session_3'].sum() + x['Session_4'].sum()).reset_index(name='Total').sort_values(by=['Total'], ascending=False)
@@ -114,7 +118,7 @@ def topStudentMin():
     
     return jsonify({'Subjects': parsed_json})
 
-#Top de asistencia por programa académico (descendente) 
+#Top de asistencia por programa académico (descendente) -------
 @app.route('/top-academic-program-assitance')
 def topAcademnicProgram():
     df_top_subject = df_students.groupby(['Programa_Academico']).apply(lambda x: x['Session_1'].sum() + x['Session_2'].sum() + x['Session_3'].sum() + x['Session_4'].sum()).reset_index(name='Total').sort_values(by=['Total'], ascending=False)
@@ -130,7 +134,7 @@ def assitanceByStudent():
     
    return jsonify({'Subjects': parsed_json})
 
-#Estudiantes por programa académico
+#Estudiantes por programa académico ---------
 @app.route('/students-by-academic-program')
 def StudentsByAcademicProgram():
     df_top_subject = df_students.groupby(['Programa_Academico']).apply(lambda x: x['Correo'].count()).reset_index(name='Total Estudiantes').sort_values(by=['Total Estudiantes'], ascending=False)
@@ -146,13 +150,13 @@ def StudentsByAcademicProgramMin():
     
     return jsonify({'result': parsed_json[len(parsed_json) -1]})
 
-#Programa académico con mas estudiantes
+#Programa académico con mas estudiantes --------
 @app.route('/students-by-academic-program-max')
 def StudentsByAcademicProgramMax():
-    df_top_subject = df_students.groupby(['Programa_Academico']).apply(lambda x: x['Correo'].count()).reset_index(name='Total Estudiantes').sort_values(by=['Total Estudiantes'], ascending=False)
+    df_top_subject = df_students.groupby(['Programa_Academico']).apply(lambda x: x['Correo'].count()).reset_index(name='Total_Estudiantes').sort_values(by=['Total_Estudiantes'], ascending=False)
     parsed_json = json.loads(df_top_subject.to_json(orient='records'))
     
-    return jsonify({'result': parsed_json[0]})
+    return jsonify({'Subjects': parsed_json[0]})
 
 @app.route('/assistance')
 def assistance():
